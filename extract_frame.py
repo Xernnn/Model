@@ -1,7 +1,6 @@
 import cv2
 import os
 
-# Function to extract frames from a video
 def extract_frames(video_path, output_dir):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -21,7 +20,10 @@ def extract_frames(video_path, output_dir):
     cap.release()
     print(f"Extracted {frame_count} frames.")
 
-# Example usage: Extract frames from a video
-video_path = "C:/Users/stdso/Documents/USTH/intern/Model/Video1/Video1.mp4"
-output_dir = "Video2"
+# Copy cái Video path vào đây
+video_path = "C:/Users/stdso/Documents/USTH/intern/Model_main/Video1/Video1.mp4"
+
+# Cũng copy cái video path vào đây, nhưng thay tên đuôi Video.mp4 bằng "Frame"
+output_dir = "C:/Users/stdso/Documents/USTH/intern/Model_main/Video1/Frame" 
+os.makedirs(output_dir, exist_ok=True)
 extract_frames(video_path, output_dir)
