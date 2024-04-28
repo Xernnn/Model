@@ -3,10 +3,9 @@ import os
 import tkinter as tk
 from tkinter import simpledialog, Entry, Label, Button, Frame, Checkbutton, IntVar
 
-def draw_ruler(img):
+def draw_ruler_and_grid(img, draw_grid, step=50):
     height, width, _ = img.shape
     ruler_width = 40  # Width of the ruler area
-    step = 50  # Distance between marks in pixels
 
     # Create space for ruler on the left and top
     img_with_ruler = cv2.copyMakeBorder(img, ruler_width, 0, ruler_width, 0, cv2.BORDER_CONSTANT, value=(255, 255, 255))
@@ -22,6 +21,13 @@ def draw_ruler(img):
         cv2.line(img_with_ruler, (0, ruler_width + i), (ruler_width, ruler_width + i), (0, 0, 0), 2)
         cv2.putText(img_with_ruler, str(i), (10, ruler_width + i + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
 
+    # Optional grid based on toggle
+    if draw_grid:
+        for x in range(0, width, step):
+            cv2.line(img_with_ruler, (ruler_width + x, ruler_width), (ruler_width + x, height + ruler_width), (0, 255, 0), 1)
+        for y in range(0, height, step):
+            cv2.line(img_with_ruler, (ruler_width, ruler_width + y), (width + ruler_width, ruler_width + y), (0, 255, 0), 1)
+
     return img_with_ruler
 
 def annotate(image_path, keypoints, output_image_path, keypoints_file_path, next_image_callback):
@@ -32,6 +38,7 @@ def annotate(image_path, keypoints, output_image_path, keypoints_file_path, next
 
     window = tk.Tk()
     window.title("Keypoint Annotation Tool")
+    grid_var = IntVar(value=0)  # Grid is off by default
 
     def update_image():
         display_img = img.copy()
@@ -39,7 +46,7 @@ def annotate(image_path, keypoints, output_image_path, keypoints_file_path, next
             if visibility:
                 cv2.circle(display_img, (x, y), radius=6, color=(0, 0, 255), thickness=-1)
                 cv2.putText(display_img, key, (x, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
-        display_img_with_ruler = draw_ruler(display_img)
+        display_img_with_ruler = draw_ruler_and_grid(display_img, grid_var.get() == 1)
         cv2.imshow("Annotated Image", display_img_with_ruler)
         return display_img_with_ruler
 
@@ -98,6 +105,10 @@ def annotate(image_path, keypoints, output_image_path, keypoints_file_path, next
 
     button_frame = Frame(window)
     button_frame.pack(side=tk.BOTTOM, pady=10, expand=True)
+
+    # GUI elements for grid toggle
+    grid_check = Checkbutton(window, text="Grid", variable=grid_var, command=update_image)
+    grid_check.pack(side=tk.TOP, padx=10, pady=5)
 
     test_button = Button(button_frame, text="Test", command=on_test)
     test_button.pack(side=tk.TOP, padx=10, pady=5)
