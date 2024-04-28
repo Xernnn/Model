@@ -38,7 +38,7 @@ def annotate(image_path, keypoints, output_image_path, keypoints_file_path, next
 
     window = tk.Tk()
     window.title("Keypoint Annotation Tool")
-    grid_var = IntVar(value=0)  # Grid is off by default
+    grid_var = IntVar(value=1)  # Grid is off by default
 
     def update_image():
         display_img = img.copy()
